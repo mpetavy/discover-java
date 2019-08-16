@@ -21,9 +21,9 @@ public class Discover {
     private DiscoverConfiguration properties;
 
     public static HashMap<InetAddress,String> FindPeers(DiscoverConfiguration properties) throws Exception {
-        log.info(String.format("disconver port: %d", properties.port));
-        log.info(String.format("disconver uid: %s", properties.uid));
-        log.info(String.format("disconver timeout: %d", properties.timeout));
+        log.debug(String.format("disconver port: %d", properties.port));
+        log.debug(String.format("disconver uid: %s", properties.uid));
+        log.debug(String.format("disconver timeout: %d", properties.timeout));
 
         HashMap<InetAddress,String> result = new HashMap<>();
 
@@ -49,7 +49,7 @@ public class Discover {
                         DatagramPacket packet = new DatagramPacket(properties.uid.getBytes(), properties.uid.getBytes().length, broadcast, properties.port);
                         socket.send(packet);
 
-                        log.info("broadcast search request on " + broadcast + " port " + properties.port);
+                        log.debug("broadcast search request on " + broadcast + " port " + properties.port);
                     } catch (Exception e) {
                         log.debug("unable to send datagramm", e);
                     }
@@ -69,15 +69,18 @@ public class Discover {
 
                     InetAddress address = packet.getAddress();
                     int port = packet.getPort();
-                    packet = new DatagramPacket(buf, buf.length, address, port);
                     String received = new String(packet.getData(), 0, packet.getLength());
 
-                    log.info(String.format("received from %s: %s",packet.getAddress(),received));
+                    log.debug(String.format("received from %s: %s",packet.getAddress(),received));
 
                     result.put(packet.getAddress(),received);
                 }
             } catch (SocketTimeoutException e) {
                 //suppress
+            }
+
+            for(InetAddress ip : result.keySet()) {
+                log.info(String.format("DiscoveredIp %s: %s",ip,result.get(ip)));
             }
         }
 
