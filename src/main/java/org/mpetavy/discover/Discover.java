@@ -71,6 +71,10 @@ public class Discover {
                     int port = packet.getPort();
                     String received = new String(packet.getData(), 0, packet.getLength());
 
+                    received = received.replace("$host",packet.getAddress().getHostAddress());
+                    received = received.replace("$post",Integer.toString(packet.getPort()));
+                    received = received.replace("$address",packet.getAddress().getHostAddress() + ":" + Integer.toString(packet.getPort()));
+
                     log.info(String.format("received from %s: %s",packet.getAddress(),received));
 
                     result.put(packet.getAddress(),received);
